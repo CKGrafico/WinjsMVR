@@ -1,0 +1,19 @@
+﻿// Para obtener más detalles sobre cómo buscar una aplicación de Windows, visite: http://go.microsoft.com/fwlink/?LinkId=212836
+
+{
+    "Ver más": "Ver más",
+    "Perros": "Perros",
+    "Gatos": "Gatos",
+    "Machos": "Machos",
+    "Hembras": "Hembras",
+    "Castellano": "Castellano",
+    "Catalán": "Català",
+    "El cambio se hará efectivo al reiniciar la aplicación": "El cambio se hará efectivo al reiniciar la aplicación.",
+    "Más información": "Más información",
+    "Nombre": "Nombre",
+    "Edad": "Edad",
+    "Sexo": "Sexo",
+    "Teléfono": "Teléfono",
+    "Raza": "Raza",
+    "Dirección": "Dirección"
+}

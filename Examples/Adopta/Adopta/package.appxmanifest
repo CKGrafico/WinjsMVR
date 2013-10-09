@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
+  <Identity Name="24512CKGrafico.Adopta" Version="1.5.0.9" Publisher="CN=959F1C5F-975C-48DE-845B-8C749E58CE02" />
+  <Properties>
+    <DisplayName>Adopta</DisplayName>
+    <PublisherDisplayName>CKGrafico</PublisherDisplayName>
+    <Logo>images\storelogo.png</Logo>
+  </Properties>
+  <Prerequisites>
+    <OSMinVersion>6.3.0</OSMinVersion>
+    <OSMaxVersionTested>6.3.0</OSMaxVersionTested>
+  </Prerequisites>
+  <Resources>
+    <Resource Language="x-generate" />
+  </Resources>
+  <Applications>
+    <Application Id="App" StartPage="default.html">
+      <m2:VisualElements DisplayName="Adopta" Description="Busca animales en adopción gracias a esta aplicación." ForegroundText="light" BackgroundColor="#ad0707" Square150x150Logo="images\Logo.png" Square30x30Logo="images\SmallLogo.png" ToastCapable="true">
+        <m2:DefaultTile ShortName="Adopta" DefaultSize="wide310x150Logo" Wide310x150Logo="images\WideLogo-scale-100.png">
+        </m2:DefaultTile>
+        <m2:SplashScreen Image="images\splashscreen.png" />
+        <m2:InitialRotationPreference>
+          <m2:Rotation Preference="landscape" />
+          <m2:Rotation Preference="landscapeFlipped" />
+        </m2:InitialRotationPreference>
+        <m2:ApplicationView MinWidth="width320" />
+      </m2:VisualElements>
+    </Application>
+  </Applications>
+  <Capabilities>
+    <Capability Name="internetClient" />
+  </Capabilities>
+</Package>

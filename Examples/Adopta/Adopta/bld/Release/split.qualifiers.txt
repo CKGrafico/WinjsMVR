@@ -1,0 +1,2 @@
+Language=CA-ES
+Language=EN-US
