@@ -2,13 +2,16 @@
     WinJS MVR a simple library to do better and easy apps in Windows 8 with WinJS
     Inspired in Backbone but more simple and oriented to WinJS
     author: @CKGrafico
-    version: 0.1
+    version: beta-0.8
 */
 
 
 (function (global, $, _) {
 
     'use strict';
+
+    var networkInfo = Windows.Networking.Connectivity.NetworkInformation;
+    var networkConnectivityInfo = Windows.Networking.Connectivity.NetworkConnectivityLevel;
 
     //Base Class
     var Base = WinJS.Class.define(
@@ -64,7 +67,7 @@
             initialize: function () { },
 
             // Trigger an event
-            trigger: function (event, options) { 
+            trigger: function (event, options) {
                 //var data = { type: event };
                 //_.extend(data, { detail: options });
                 //WinJS.Application.queueEvent(data);
@@ -72,7 +75,7 @@
             },
 
             // Subscribe to event
-            on: function (event, callback, context) { 
+            on: function (event, callback, context) {
                 this.addEventListener(event, _.bind(callback, context || this));
                 //WinJS.Application.addEventListener(event, _.bind(callback, context || this)); // TO DO no only global events?
             },
@@ -84,7 +87,7 @@
             },
 
             // Subscribe to event once
-            once: function (event, callback, context) { 
+            once: function (event, callback, context) {
                 var self = this;
                 this.on(event, function () {
                     _.bind(callback, context || self);
@@ -119,7 +122,7 @@
                     var Model = this.model;
                     this.model = new Model();
                     // Pasing model events to the view
-                    this._listeners = _.extend(this._listeners || {} , this.model._listeners);
+                    //this._listeners = _.extend(this._listeners || {} , this.model._listeners);
                 }
 
                 // Create $el
@@ -148,7 +151,7 @@
 
                 });
 
-                // Init 
+                // Init
                 this.initialize();
 
                 //Special base constructor
@@ -163,7 +166,7 @@
             templatesPath: "/templates/", // Path of the templates
             templatesExtension: ".hbs", // Extension of the templates
             templateName: null, // Name current template
-   
+
             template: function (moreOptions) { // Get the template and compile it
                 if (this.templateName) {
                     return $('<div/>').loadFromTemplate({
@@ -449,9 +452,6 @@
 
                 if (this.haveInternet()) {
                     $("#nointernet").remove();
-                } else {
-                    var self = this;
-                    setTimeout(function () { self.internetMessage(); }, 100);
                 }
             },
             //Funcion que espera a tener internet para realizar una accion
@@ -464,17 +464,18 @@
 
                 // Sobrescribo opciones
                 _.extend(opciones, options);
-
                 if (this.haveInternet()) {
-                    if (opciones.callback != null) {
-                        if (opciones.param != null) {
+                    if (opciones.callback) {
+                        if (opciones.param) {
                             opciones.callback(opciones.param);
                         } else {
                             opciones.callback();
                         }
                     }
                 } else {
-                    setTimeout(function () { WinTools.needInternetAction(opciones); }, 100);
+                    this.internetMessage();
+                    var self = this;
+                    setTimeout(function () { self.needInternetAction(opciones); }, 100);
                 }
             },
 
@@ -484,7 +485,7 @@
                 }else{
                     this.$loading.toggle();
                 }
-                
+
             }
         }
     );
