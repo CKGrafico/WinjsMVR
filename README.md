@@ -214,14 +214,6 @@ Documentation
 
 **Examples**
 
-***Write a View***
-
-    App.Views.Header = WinJS.Class.extend(WinjsMVR.View,{...});
-
-***Create new View***
-
-    var header = new App.Views.Header({ name: Quique }); //you can pass options object (this.options in the view)
-
 ***Example init router***
 
     global.App = {
