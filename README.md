@@ -228,3 +228,8 @@ Documentation
 
 
     };
+
+    [More info, the code is commented][1]
+
+
+  [1]: https://github.com/CKGrafico/WinjsMVR/blob/master/core/WinjsMVR.js
