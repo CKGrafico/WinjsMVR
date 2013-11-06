@@ -205,63 +205,13 @@ Documentation
 - **this.off()** off: function (event, callback, context) {} //Remove custom event
 - **this.once()** once: function (event, callback, context) {} //Subscribe custom event once
 - **this.trigger()** trigger: function (event, options) {} //Trigger custom event once
+- **this.navigate()** navigate: function (pages) {} //Navigate with WinJS.Navigation
+- **this.history()** history: function () {} //Get history of navigation
+- **this.location()** location: function () {} //Get current location
+- **this.back()** back: function (distance, callback) {} //Navigate to previous pages
+- **this.addPage()** addPage: function (pageName, view) {} //Transform simple View to page
+- **this.onNavigate()** onNavigate: function (page) {} //Is called when you navigate
 
-
-**Completing other options**
-
-    dom: { // Dom elements for use in the view
-        myElemet: 'span.with-class',
-        otherElement: 'header'
-    }
-
-----------
-
-    classes: { // Classes for use in the view
-        myClass: 'exampleofclass',
-        otherClass: 'other-class'
-    }
-
-----------
-
-    model: App.myModel  // Model of this view (you can put the same model in different views)
-
-----------
-    events: {
-    // Custom Events (you can use events of this view or of views created inside this)
-    // The event is propagated to parent View
-        'eventName': 'functionName', // (this.functionName(e){})
-        'otherview/OtherEventName': 'otherFunction'
-    }
-
-----------
-    domEvents: {
-    // Easy events of dom that corresponds to this view
-        'click#elementInsideView': 'functionName'
-    }
-
-----------
-
-**Methods**
-
-
-    initialize: function() {
-        // The first method who is called
-    },
-
-----------
-
-    render: function() {
-        // You can call it when you want to render the view
-        // Example: this.$el.html(this.template(this.options));
-        return this
-    },
-
-----------
-    customMethod: function() {
-        // You can use also custom methods (obviously)
-    },
-
-   ----------
 **Examples**
 
 ***Write a View***
@@ -272,23 +222,17 @@ Documentation
 
     var header = new App.Views.Header({ name: Quique }); //you can pass options object (this.options in the view)
 
-***Example initialize***
+***Example init router***
 
-    initialize: function () {
-        this.filtersArray = [
-            { id: 'perros', name: t('Perros'), selected: true},
-            { id: 'gatos', name: t('Gatos'), selected: true },
-            { id: 'machos', name: t('Machos'), selected: true },
-            { id: 'hembras', name: t('Hembras'), selected: true }
-        ];
-        this.filters = new App.Views.Filters({ filters: this.filtersArray });
-    }
+    global.App = {
+        Views: {},
+        Models: {},
 
-***Example rendering***
+        start: function (view) {
+            this.router = new WinjsMVR.Router({ wrapper: '#wrapper' });
+            this.router.addPage(view, new this.Views[view]);
+            this.router.navigate(view);
+        }
 
-    render: function () {
-    // The view has this.el and this.$el that corresponds to this view object in the dom
-        this.$el.html(this.template(this.options));
-    this.$el.append(this.filters.render().$el);
-        return this;
-    }
+
+    };
