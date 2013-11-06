@@ -1,6 +1,0 @@
-bld\Release\split.pri
-bld\Release\split.map.txt
-bld\Release\split.language-ca.pri
-bld\Release\split.language-ca.map.txt
-bld\Release\split.language-en.pri
-bld\Release\split.language-en.map.txt

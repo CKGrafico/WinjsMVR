@@ -1,6 +1,0 @@
-﻿[ResourceMetadata]
-"ResourceId"			"split.language-en"
-"ResourceDimensions"		"language-en-us"
-
-[Files]
-"E:\Visual Studio 2012\Projects\Adopta\Adopta\bld\Release\split.language-en.pri"			"resources.pri"

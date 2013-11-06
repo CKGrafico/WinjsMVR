@@ -1,2 +1,0 @@
-bld\Release\filemap.pri
-bld\Release\filemap.map.txt

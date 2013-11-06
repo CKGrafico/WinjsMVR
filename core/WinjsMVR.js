@@ -2,7 +2,7 @@
     WinJS MVR a simple library to do better and easy apps in Windows 8 with WinJS
     Inspired in Backbone but more simple and oriented to WinJS
     author: @CKGrafico
-    version: beta-0.8
+    version: beta-0.9
 */
 
 
@@ -60,7 +60,7 @@
             options: {},
 
             // Object with events of the class
-            // Example: 'myevent': 'mycallback' (mycallback = this.mycallback)
+            // Example: 'myevent': 'mycallback' ----> (mycallback = this.mycallback)
             events: {},
 
             // Init function
@@ -68,21 +68,16 @@
 
             // Trigger an event
             trigger: function (event, options) {
-                //var data = { type: event };
-                //_.extend(data, { detail: options });
-                //WinJS.Application.queueEvent(data);
                 this.dispatchEvent(event, options);
             },
 
             // Subscribe to event
             on: function (event, callback, context) {
                 this.addEventListener(event, _.bind(callback, context || this));
-                //WinJS.Application.addEventListener(event, _.bind(callback, context || this)); // TO DO no only global events?
             },
 
             // Remove event
             off: function (event, callback, context) {
-                //this.removeEventListener(event, _.bind(callback, context || this));
                 WinJS.Application.removeEventListener(event, _.bind(callback, context || this));
             },
 
@@ -98,7 +93,7 @@
         }
     );
 
-    // Mixins
+    // Mixin for MVR events
     WinJS.Class.mix(Base, WinJS.Utilities.eventMixin);
 
     // Views Class
@@ -121,8 +116,6 @@
                 if (this.model) {
                     var Model = this.model;
                     this.model = new Model();
-                    // Pasing model events to the view
-                    //this._listeners = _.extend(this._listeners || {} , this.model._listeners);
                 }
 
                 // Create $el
@@ -163,8 +156,8 @@
             className: '', // Classes for this
             idName: 'view', // Id for this
 
-            templatesPath: "/templates/", // Path of the templates
-            templatesExtension: ".hbs", // Extension of the templates
+            templatesPath: '/templates/', // Path of the templates
+            templatesExtension: '.hbs', // Extension of the templates
             templateName: null, // Name current template
 
             template: function (moreOptions) { // Get the template and compile it
@@ -184,15 +177,16 @@
             // You can use two types of events of dom or custom
             // Examples:
             // Custom event: 'eventName': 'functionName'
+            // Custom event: 'object/eventName': 'functionName'
             events: {},
 
             // Dom event:   'click #element': 'functionName'
             domEvents: {},
 
-            // Model of this view
+            // Model of view
             model: null,
 
-            // Render this view
+            // Render the view
             render: function () {
                 return this;
             }
@@ -253,7 +247,7 @@
             // Array of info
             collection: null,
 
-            // Get JSON from an url andsave it in collection
+            // Get JSON from an url and save it in collection
             getJSON: function (data, callback) {
                 var self = this;
                 var myUrl = this.get('url');
@@ -329,26 +323,32 @@
         // Instance Members
         {
 
+            // Navigate to a page
             navigate: function (page) {
                 WinJS.Navigation.navigate(page);
             },
 
+            // Get history of navigation
             history: function () {
                 return WinJS.Navigation.history;
             },
 
+            // Get gurrent location
             location: function () {
                 return WinJS.Navigation.location;
             },
 
+            // Go back
             back: function (distance, callback) {
                 WinJS.Navigation.back(distance).done(callback);
             },
 
+            // Ad page to router
             addPage: function (page, view) {
                 this.pages[page] = view;
             },
 
+            // After navigate
             onNavigate: function (page) {
 
                 var pageName = page.detail.location;
@@ -384,9 +384,9 @@
 
         // Instance Members
         {
-            // Funcion para crear alerts
+            // Functio for modal alerts
             alert: function (options) {
-                // Opciones por defecto
+                // Default options
                 var opciones = {
                     text: null,
                     btn1: "Accept",
@@ -396,12 +396,12 @@
                     time: 100
                 }
 
-                // Sobrescribo opciones
+                // Extend options
                 _.extend(opciones, options);
 
                 if (!ShowingMessage) {
                     ShowingMessage = true;
-                    // Enseño la barra de carga
+                    // Show loading
                     this.toggleLoading('fade')
 
                     setTimeout(function () {
@@ -417,7 +417,7 @@
                             );
                         }
 
-                        // Show the message dialog
+                        // Hide Loading
                         this.toggleLoading('fade')
 
                         msg.showAsync().done(function () {
@@ -427,7 +427,7 @@
                 }
             },
 
-            // Funcion que comprueba si un usuario tiene conexión
+            // Function to test internet connection
             haveInternet: function () {
                 var connectionProfile = networkInfo.getInternetConnectionProfile();
                 if (connectionProfile == null) {
@@ -444,7 +444,7 @@
                 return true;
             },
 
-            // Funcion que muestra un alert hasta que tengas internet
+            // Function that shows alert while you don't have internet
             internetMessage: function () {
                 if ($("#nointernet").length == 0) {
                     $("body").prepend("<div id='nointernet' style='position: absolute;width: 100%;height: 100%;background: rgba(255,255,255,0.6);z-index: 100000;font-weight: bold;text-align: center;color: rgba(0,0,0,0.4);font-size: 6em;'>No Internet</div>");
@@ -454,7 +454,8 @@
                     $("#nointernet").remove();
                 }
             },
-            //Funcion que espera a tener internet para realizar una accion
+
+            // Function that executes callback when you have internet
             needInternetAction: function (options) {
                 // Opciones por defecto
                 var opciones = {
