@@ -156,6 +156,12 @@ Documentation
 
 **<i class="icon-folder"></i>Methods**
 
+    initialize: function() {
+        // The first method who is called
+    },
+
+----------
+
     customMethod: function() {
         // You can use also custom methods (obviously)
     },
@@ -188,5 +194,101 @@ Documentation
     });
 
 
+### Router ###
+
+**Important things**
+
+- **this.$wrapper** Container of our app come from this.options.wrapper
+- **this.pages:** object with the pages
+- **this.options:** the options of your view (corresponds to object parameter when you create a new router)
+- **this.on()** on: function (event, callback, context) {} //Subscribe to custom event
+- **this.off()** off: function (event, callback, context) {} //Remove custom event
+- **this.once()** once: function (event, callback, context) {} //Subscribe custom event once
+- **this.trigger()** trigger: function (event, options) {} //Trigger custom event once
 
 
+**Completing other options**
+
+    dom: { // Dom elements for use in the view
+        myElemet: 'span.with-class',
+        otherElement: 'header'
+    }
+
+----------
+
+    classes: { // Classes for use in the view
+        myClass: 'exampleofclass',
+        otherClass: 'other-class'
+    }
+
+----------
+
+    model: App.myModel  // Model of this view (you can put the same model in different views)
+
+----------
+    events: {
+    // Custom Events (you can use events of this view or of views created inside this)
+    // The event is propagated to parent View
+        'eventName': 'functionName', // (this.functionName(e){})
+        'otherview/OtherEventName': 'otherFunction'
+    }
+
+----------
+    domEvents: {
+    // Easy events of dom that corresponds to this view
+        'click#elementInsideView': 'functionName'
+    }
+
+----------
+
+**Methods**
+
+
+    initialize: function() {
+        // The first method who is called
+    },
+
+----------
+
+    render: function() {
+        // You can call it when you want to render the view
+        // Example: this.$el.html(this.template(this.options));
+        return this
+    },
+
+----------
+    customMethod: function() {
+        // You can use also custom methods (obviously)
+    },
+
+   ----------
+**Examples**
+
+***Write a View***
+
+    App.Views.Header = WinJS.Class.extend(WinjsMVR.View,{...});
+
+***Create new View***
+
+    var header = new App.Views.Header({ name: Quique }); //you can pass options object (this.options in the view)
+
+***Example initialize***
+
+    initialize: function () {
+        this.filtersArray = [
+            { id: 'perros', name: t('Perros'), selected: true},
+            { id: 'gatos', name: t('Gatos'), selected: true },
+            { id: 'machos', name: t('Machos'), selected: true },
+            { id: 'hembras', name: t('Hembras'), selected: true }
+        ];
+        this.filters = new App.Views.Filters({ filters: this.filtersArray });
+    }
+
+***Example rendering***
+
+    render: function () {
+    // The view has this.el and this.$el that corresponds to this view object in the dom
+        this.$el.html(this.template(this.options));
+    this.$el.append(this.filters.render().$el);
+        return this;
+    }
