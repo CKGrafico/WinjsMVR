@@ -11,7 +11,7 @@ Documentation
 
 ### View ###
 
-**<i class="icon-hdd"></i>Important things**
+**Important things**
 
 - **this.el** DOM object that correspond to this view
 - **this.$el:** jQuery object that corresponds to this.el
@@ -21,7 +21,7 @@ Documentation
 - **this.once()** once: function (event, callback, context) {} //Subscribe custom event once
 - **this.trigger()** trigger: function (event, options) {} //Trigger custom event once
 
-**<i class="icon-pencil"></i>Overwriting options**
+**Overwriting options**
 
  - **tagName:** 'header' *//Tag name for the view* #default 'div'
  - **className:** 'myclass1 myclass2 myclass3' *//Classes for this element*  #default ''
@@ -33,7 +33,7 @@ Documentation
  - **template:** function(); *//Compile the template* #default with https://github.com/CKGrafico/jQuery_HandlebarsJS
 
 
-**<i class="icon-cog"></i>Completing other options**
+**Completing other options**
 
     dom: { // Dom elements for use in the view
         myElemet: 'span.with-class',
@@ -67,7 +67,7 @@ Documentation
 
 ----------
 
-**<i class="icon-folder"></i>Methods**
+**Methods**
 
 
     initialize: function() {
@@ -88,7 +88,7 @@ Documentation
     },
 
    ----------
-**<i class="icon-file"></i>Examples**
+**Examples**
 
 ***Write a View***
 
@@ -118,3 +118,75 @@ Documentation
     this.$el.append(this.filters.render().$el);
         return this;
     }
+
+### Model ###
+
+**<i class="icon-hdd"></i>Important things**
+
+- **this.options:** the options of your view (corresponds to object parameter when you create a new view)
+- **this.collection:** array of objects with the model (created with json)
+- **this.url:** string that corresponds to json location
+- **this.on()** on: function (event, callback, context) {} *//Subscribe to custom event*
+- **this.off()** off: function (event, callback, context) {} *//Remove custom event*
+- **this.once()** once: function (event, callback, context) {} *//Subscribe custom event once*
+- **this.trigger()** trigger: function (event, options) {} *//Trigger custom event once*
+- **this.get()** get: function (attribute) {} *//get attribute from the model*
+- **this.set()** set: function (attribute, value) {} *//set attribute from the model*
+- **this.toString()** toString: function () {} *//Convert attributes object to string*
+- **this.getJSON()** getJSON: function (data, callback) {} *//Call to this.url and put the JSON in collection #when finish trigger an event trigger('collection.Fill', json);*
+- **this.addToCollection()** addToCollection: function (element) {} *//Add single element to collection #when finish trigger an event trigger('collection.Add', element);*
+- **this.resetCollection()** resetCollection: function () {} *//Empty collection #when finish trigger an event trigger('collection.Reset');*
+
+
+**<i class="icon-cog"></i>Completing other options**
+
+    attributes: { // Attributes of the model
+        myAttribute: 'title',
+        other: 2
+    }
+
+----------
+    events: {
+    // Custom Events (you can use events of this view or of views created inside this)
+    // The event is propagated to parent View
+        'eventName': 'functionName', // (this.functionName(e){})
+        'otherview/OtherEventName': 'otherFunction'
+    }
+
+
+**<i class="icon-folder"></i>Methods**
+
+    customMethod: function() {
+        // You can use also custom methods (obviously)
+    },
+
+   ----------
+**<i class="icon-file"></i>Examples**
+
+***Write a Model***
+
+    App.Models.Animal = WinJS.Class.extend(WinjsMVR.Model,{...});
+
+***Create new Model***
+
+    var myModel = new App.Models.Animal();
+
+***Example attributes***
+
+    attributes: {
+        url: 'http://adopta.azurewebsites.net',
+        p: 0
+    },
+
+***Example filling collection***
+
+    this.getJSON({
+        path: this.get('path') || '',
+        tags:  tags,
+        p: this.get('p') || 0,
+        async: true
+    });
+
+
+
+
