@@ -2,7 +2,7 @@
     WinJS MVR a simple library to do better and easy apps in Windows 8 with WinJS
     Inspired in Backbone but more simple and oriented to WinJS
     author: @CKGrafico
-    version: beta-0.9.1
+    version: beta-0.9.2
 */
 
 
@@ -38,8 +38,7 @@
                         if (self[value]) {
                             self[object].on(event, self[value], self);
                         } else {
-                            debugger;
-                            console.log(self[value]);
+                            console.error(self[value]);
                         }
                     } else {
 
@@ -49,8 +48,7 @@
                         if (self[value]) {
                             self.on(event, self[value], self);
                         } else {
-                            debugger;
-                            console.log(self[value]);
+                            console.error(self[value]);
                         }
                     }
                 });
@@ -60,7 +58,7 @@
             options: {},
 
             // Object with events of the class
-            // Example: 'myevent': 'mycallback' ----> (mycallback = this.mycallback)
+            // Example: 'myevent': 'mycallback' (mycallback = this.mycallback)
             events: {},
 
             // Init function
@@ -68,16 +66,21 @@
 
             // Trigger an event
             trigger: function (event, options) {
+                //var data = { type: event };
+                //_.extend(data, { detail: options });
+                //WinJS.Application.queueEvent(data);
                 this.dispatchEvent(event, options);
             },
 
             // Subscribe to event
             on: function (event, callback, context) {
                 this.addEventListener(event, _.bind(callback, context || this));
+                //WinJS.Application.addEventListener(event, _.bind(callback, context || this)); // TO DO no only global events?
             },
 
             // Remove event
             off: function (event, callback, context) {
+                //this.removeEventListener(event, _.bind(callback, context || this));
                 WinJS.Application.removeEventListener(event, _.bind(callback, context || this));
             },
 
@@ -93,7 +96,7 @@
         }
     );
 
-    // Mixin for MVR events
+    // Mixins
     WinJS.Class.mix(Base, WinJS.Utilities.eventMixin);
 
     // Views Class
@@ -116,6 +119,8 @@
                 if (this.model) {
                     var Model = this.model;
                     this.model = new Model();
+                    // Pasing model events to the view
+                    //this._listeners = _.extend(this._listeners || {} , this.model._listeners);
                 }
 
                 // Create $el
@@ -133,14 +138,10 @@
                     if (self[value]) {
                         method = _.bind(self[value], self);
                     } else {
-                        debugger;
-                        console.log(self[value]);
+                        console.error(self[value]);
                     }
 
-                    var id = self.$el.attr('id');
-                    var tag = self.$el.prop('tagName').toLowerCase();
-                    element = (id) ? tag + '#' + id + ' ' + element : tag + element;
-                    $('body').on(event, element, method); // TO DO this isn't good
+                    self.$el.on(event, element, method);
 
                 });
 
@@ -156,8 +157,8 @@
             className: '', // Classes for this
             idName: 'view' + Math.random().toString(36).substr(2,6), // Id for this
 
-            templatesPath: '/templates/', // Path of the templates
-            templatesExtension: '.hbs', // Extension of the templates
+            templatesPath: "/templates/", // Path of the templates
+            templatesExtension: ".hbs", // Extension of the templates
             templateName: null, // Name current template
 
             template: function (moreOptions) { // Get the template and compile it
@@ -177,16 +178,15 @@
             // You can use two types of events of dom or custom
             // Examples:
             // Custom event: 'eventName': 'functionName'
-            // Custom event: 'object/eventName': 'functionName'
             events: {},
 
             // Dom event:   'click #element': 'functionName'
             domEvents: {},
 
-            // Model of view
+            // Model of this view
             model: null,
 
-            // Render the view
+            // Render this view
             render: function () {
                 return this;
             }
@@ -247,7 +247,7 @@
             // Array of info
             collection: null,
 
-            // Get JSON from an url and save it in collection
+            // Get JSON from an url andsave it in collection
             getJSON: function (data, callback) {
                 var self = this;
                 var myUrl = this.get('url');
@@ -323,32 +323,26 @@
         // Instance Members
         {
 
-            // Navigate to a page
             navigate: function (page) {
                 WinJS.Navigation.navigate(page);
             },
 
-            // Get history of navigation
             history: function () {
                 return WinJS.Navigation.history;
             },
 
-            // Get gurrent location
             location: function () {
                 return WinJS.Navigation.location;
             },
 
-            // Go back
             back: function (distance, callback) {
                 WinJS.Navigation.back(distance).done(callback);
             },
 
-            // Ad page to router
             addPage: function (page, view) {
                 this.pages[page] = view;
             },
 
-            // After navigate
             onNavigate: function (page) {
 
                 var pageName = page.detail.location;
@@ -384,9 +378,9 @@
 
         // Instance Members
         {
-            // Functio for modal alerts
+            // Funcion para crear alerts
             alert: function (options) {
-                // Default options
+                // Opciones por defecto
                 var opciones = {
                     text: null,
                     btn1: "Accept",
@@ -394,15 +388,15 @@
                     callback1: null,
                     callback2: null,
                     time: 100
-                }
+                };
 
-                // Extend options
+                // Sobrescribo opciones
                 _.extend(opciones, options);
-
+                var ShowingMessage;
                 if (!ShowingMessage) {
                     ShowingMessage = true;
-                    // Show loading
-                    this.toggleLoading('fade')
+                    // Enseño la barra de carga
+                    this.toggleLoading('fade');
 
                     setTimeout(function () {
                         // Create the message dialog and set its content
@@ -410,15 +404,15 @@
                         // Add commands and set their command handlers
                         msg.commands.append(
                             new Windows.UI.Popups.UICommand(opciones.btn1, opciones.callback1)
-                        )
+                        );
                         if (opciones.btn2) {
                             msg.commands.append(
                                 new Windows.UI.Popups.UICommand(opciones.btn2, opciones.callback2)
                             );
                         }
 
-                        // Hide Loading
-                        this.toggleLoading('fade')
+                        // Show the message dialog
+                        this.toggleLoading('fade');
 
                         msg.showAsync().done(function () {
                             ShowingMessage = false;
@@ -427,26 +421,26 @@
                 }
             },
 
-            // Function to test internet connection
+            // Funcion que comprueba si un usuario tiene conexión
             haveInternet: function () {
                 var connectionProfile = networkInfo.getInternetConnectionProfile();
-                if (connectionProfile == null) {
+                if (connectionProfile === null) {
                     return false;
                 }
 
                 var networkConnectivityLevel = connectionProfile.getNetworkConnectivityLevel();
-                if (networkConnectivityLevel == networkConnectivityInfo.none
-                    || networkConnectivityLevel == networkConnectivityInfo.localAccess
-                    || networkConnectivityLevel == networkConnectivityInfo.constrainedInternetAccess) {
+                if (networkConnectivityLevel === networkConnectivityInfo.none
+                    || networkConnectivityLevel === networkConnectivityInfo.localAccess
+                    || networkConnectivityLevel === networkConnectivityInfo.constrainedInternetAccess) {
                     return false;
                 }
 
                 return true;
             },
 
-            // Function that shows alert while you don't have internet
+            // Funcion que muestra un alert hasta que tengas internet
             internetMessage: function () {
-                if ($("#nointernet").length == 0) {
+                if ($("#nointernet").length === 0) {
                     $("body").prepend("<div id='nointernet' style='position: absolute;width: 100%;height: 100%;background: rgba(255,255,255,0.6);z-index: 100000;font-weight: bold;text-align: center;color: rgba(0,0,0,0.4);font-size: 6em;'>No Internet</div>");
                 }
 
@@ -454,14 +448,13 @@
                     $("#nointernet").remove();
                 }
             },
-
-            // Function that executes callback when you have internet
+            //Funcion que espera a tener internet para realizar una accion
             needInternetAction: function (options) {
                 // Opciones por defecto
                 var opciones = {
                     callback: null,
                     param: null
-                }
+                };
 
                 // Sobrescribo opciones
                 _.extend(opciones, options);
@@ -482,7 +475,7 @@
 
             toggleLoading: function (extra) {
                 if (extra) {
-                    this.$loading.fadeToggle()
+                    this.$loading.fadeToggle();
                 }else{
                     this.$loading.toggle();
                 }
