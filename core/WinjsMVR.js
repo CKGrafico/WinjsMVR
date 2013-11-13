@@ -2,9 +2,8 @@
     WinJS MVR a simple library to do better and easy apps in Windows 8 with WinJS
     Inspired in Backbone but more simple and oriented to WinJS
     author: @CKGrafico
-    version: beta-0.9.2
+    version: beta-0.9.3
 */
-
 
 (function (global, $, _) {
 
@@ -140,8 +139,7 @@
                     } else {
                         console.error(self[value]);
                     }
-
-                    self.$el.on(event, element, method);
+                    $(document).on(event, '#' + self.idName + ' ' + element, method);
 
                 });
 
@@ -189,7 +187,10 @@
             // Render this view
             render: function () {
                 return this;
-            }
+            },
+
+            // Optional is called by Navigator after render a page
+            afterRender: null
         }
     );
 
@@ -343,13 +344,21 @@
                 this.pages[page] = view;
             },
 
+            removePage: function(page){
+                delete this.pages[page]
+            },
+
             onNavigate: function (page) {
 
                 var pageName = page.detail.location;
-                var CurrentPage = this.pages[pageName];
-                var rendered = CurrentPage.render();
+                this.currentPage = this.pages[pageName];
+                this.currentPage.render();
+                this.$wrapper.html(this.currentPage.$el);
 
-                this.$wrapper.html(rendered.$el);
+
+                if(this.currentPage.afterRender) {
+                    this.currentPage.afterRender();
+                }
             }
         }
     );
