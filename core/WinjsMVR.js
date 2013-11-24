@@ -2,8 +2,9 @@
     WinJS MVR a simple library to do better and easy apps in Windows 8 with WinJS
     Inspired in Backbone but more simple and oriented to WinJS
     author: @CKGrafico
-    version: beta-0.9.3.5
+    version: beta-0.9.3
 */
+
 
 (function (global, $, _) {
 
@@ -23,34 +24,8 @@
             baseConstructor: function (context) {
                 var self = context;
 
-                // Prepare custom events
-                _.each(self.events, function (value, key) {
-                    var split = key.split('/');
-                    var event;
-
-                    if (split.length === 2) {
-
-                        // event like:  events: {'model/MyEvent': 'Callback'}
-                        var object = split[0];
-                        event = split[1];
-
-                        if (self[value]) {
-                            self[object].on(event, self[value], self);
-                        } else {
-                            console.error(self[value]);
-                        }
-                    } else {
-
-                        // event like:  events: {'MyEvent': 'Callback'}
-                        event = key;
-
-                        if (self[value]) {
-                            self.on(event, self[value], self);
-                        } else {
-                            console.error(self[value]);
-                        }
-                    }
-                });
+                // Prepare events
+                this.configEvents();
             },
 
             // Object with options of the class
@@ -68,7 +43,7 @@
                 //var data = { type: event };
                 //_.extend(data, { detail: options });
                 //WinJS.Application.queueEvent(data);
-                this.dispatchEvent(event, options);
+                this.dispatchEvent(event, options || {});
             },
 
             // Subscribe to event
@@ -91,6 +66,47 @@
                     self.off();
                 });
             },
+
+            // Remove or capture Events
+            configEvents: function(remove) {
+                // Prepare custom events
+                var self = this;
+                _.each(this.events, function (value, key) {
+                    var split = key.split('/');
+                    var event;
+
+                    if (split.length === 2) {
+
+                        // event like:  events: {'model/MyEvent': 'Callback'}
+                        var object = split[0];
+                        event = split[1];
+
+                        if (self[value]) {
+                            if(remove) {
+                                self[object].off(event);
+                            }else{
+                                self[object].on(event, self[value], self);
+                            }
+                        } else {
+                            console.error(self[value]);
+                        }
+                    } else {
+
+                        // event like:  events: {'MyEvent': 'Callback'}
+                        event = key;
+
+                        if (self[value]) {
+                            if(remove) {
+                                self.off(event);
+                            }else{
+                                self.on(event, self[value], self);
+                            }
+                        } else {
+                            console.error(self[value]);
+                        }
+                    }
+                });
+            }
 
         }
     );
@@ -127,32 +143,7 @@
                 this.el = this.$el[0];
 
                 // Prepare dom events
-                var self = this;
-                _.each(this.domEvents, function (value, key) {
-                    var split = key.split(' ');
-                    var eventName;
-                    var element = '';
-                    var method;
-
-                    _.each(split, function(el, i){
-                        switch(i) {
-                            case 0:
-                                eventName = el;
-                            break;
-                            default:
-                                element += ' ' + el
-                        }
-                    });
-
-                    if (self[value]) {
-                        method = _.bind(self[value], self);
-                    } else {
-                        console.error(self[value]);
-                    }
-
-                    $(document).on(eventName, '#' + self.idName + element, method);
-
-                });
+                this.configDomEvents();
 
                 // Init
                 this.initialize();
@@ -198,6 +189,40 @@
             // Render this view
             render: function () {
                 return this;
+            },
+
+            // Remove or Capture domevents
+            configDomEvents: function(remove){
+                var self = this;
+                _.each(this.domEvents, function (value, key) {
+                    var split = key.split(' ');
+                    var eventName;
+                    var element = '';
+                    var method;
+
+                    _.each(split, function(el, i){
+                        switch(i) {
+                            case 0:
+                                eventName = el;
+                            break;
+                            default:
+                                element += ' ' + el
+                        }
+                    });
+
+                    if (self[value]) {
+                        method = _.bind(self[value], self);
+                    } else {
+                        console.error(self[value]);
+                    }
+
+                    if(remove){
+                        $(document).off(eventName, '#' + self.idName + element);
+                    }else{
+                       $(document).on(eventName, '#' + self.idName + element, method);
+                    }
+
+                });
             },
 
             // Optional is called by Navigator after render a page
@@ -356,7 +381,13 @@
             },
 
             removePage: function(page){
-                delete this.pages[page]
+                var myPage = this.pages[page];
+                if(myPage){
+                    this.pages[page].configEvents(true);
+                    this.pages[page].configDomEvents(true);
+                    this.pages[page] = null;
+                    delete this.pages[page]
+                }
             },
 
             onNavigate: function (page) {
@@ -369,6 +400,10 @@
 
                 if(this.currentPage.afterRender) {
                     this.currentPage.afterRender();
+                }
+
+                if(this.currentPage.afterNavigate) {
+                    this.currentPage.afterNavigate();
                 }
             }
         }
