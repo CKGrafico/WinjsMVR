@@ -30,7 +30,7 @@ Documentation
  - **templatesPath:** '/customPath/' *//Path of the templates* #default 'templates'
  - **templatesExtension:** '.html' *//Extension of the templates* #default '.hbs'
  - **templateName:** 'mytemplate' *//Name current template* #default null
- - **template:** function(); *//Compile the template* #default with https://github.com/CKGrafico/jQuery_HandlebarsJS
+ - **template:** function(); *//Compile the template with Handlebars
 
 
 **Completing other options**
@@ -123,19 +123,15 @@ Documentation
 
 **<i class="icon-hdd"></i>Important things**
 
-- **this.options:** the options of your view (corresponds to object parameter when you create a new view)
-- **this.collection:** array of objects with the model (created with json)
-- **this.url:** string that corresponds to json location
+- **this.options:** the options of your model (corresponds to object parameter when you create a new model)
 - **this.on()** on: function (event, callback, context) {} *//Subscribe to custom event*
 - **this.off()** off: function (event, callback, context) {} *//Remove custom event*
 - **this.once()** once: function (event, callback, context) {} *//Subscribe custom event once*
 - **this.trigger()** trigger: function (event, options) {} *//Trigger custom event once*
 - **this.get()** get: function (attribute) {} *//get attribute from the model*
 - **this.set()** set: function (attribute, value) {} *//set attribute from the model*
+- **this.delete()** delete: function (attribute) {} *//delete attribute from the model*
 - **this.toString()** toString: function () {} *//Convert attributes object to string*
-- **this.getJSON()** getJSON: function (data, callback) {} *//Call to this.url and put the JSON in collection #when finish trigger an event trigger('collection.Fill', json);*
-- **this.addToCollection()** addToCollection: function (element) {} *//Add single element to collection #when finish trigger an event trigger('collection.Add', element);*
-- **this.resetCollection()** resetCollection: function () {} *//Empty collection #when finish trigger an event trigger('collection.Reset');*
 
 
 **<i class="icon-cog"></i>Completing other options**
@@ -192,6 +188,27 @@ Documentation
         p: this.get('p') || 0,
         async: true
     });
+    
+### Controller ###
+
+**<i class="icon-hdd"></i>Important things**
+
+- **this.options:** the options of your collection (corresponds to object parameter when you create a new collection)
+- **this.on()** on: function (event, callback, context) {} *//Subscribe to custom event*
+- **this.off()** off: function (event, callback, context) {} *//Remove custom event*
+- **this.once()** once: function (event, callback, context) {} *//Subscribe custom event once*
+- **this.trigger()** trigger: function (event, options) {} *//Trigger custom event once*
+- **this.get()** get: function (id) {} *//get model from collection*
+- **this.set()** set: function (id, attribute, value) {} *//set attribute from the model of collection*
+- **this.extend()** extend: function (id, options) {} *//extend model from collection*
+- **this.add()** add: function (element) {} *//add element to collection*
+- **this.addSome()** addSome: function (elements) {} *//add some elements to collection*
+- **this.remove()** remove: function (id) {} *//remove a element from collection*
+- **this.clear()** clear: function () {} *//clear collection*
+- **this.load()** load: function (data) {} *//insert array of objects into collection*
+- **this.toJSON()** toJSON: function () {} *//Convert collection to array of objects*
+- **this.toString()** toString: function () {} *//Convert collection to array of objects and stringify*
+- **this.getJSON()** getJSON: function (data, callback) {} *//Call tourl and put the JSON in collection*
 
 
 ### Router ###
