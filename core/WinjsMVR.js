@@ -2,11 +2,11 @@
 	WinJS MVR a simple library to do better and easy apps in Windows 8 with WinJS
 	Inspired in Backbone but more simple and oriented to WinJS
 	author: @CKGrafico
-	version: beta-0.9.5
+	version: 1.0.0
 */
 
 
-(function (global, $, _) {
+(function (global, $, _, Handlebars) {
 
 	'use strict';
 
@@ -40,22 +40,18 @@
 
 			// Trigger an event
 			trigger: function (event, options) {
-				//var data = { type: event };
-				//_.extend(data, { detail: options });
-				//WinJS.Application.queueEvent(data);
 				this.dispatchEvent(event, options || {});
 			},
 
 			// Subscribe to event
 			on: function (event, callback, context) {
 				this.addEventListener(event, _.bind(callback, context || this));
-				//WinJS.Application.addEventListener(event, _.bind(callback, context || this)); // TO DO no only global events?
+				// detail : {};
 			},
 
 			// Remove event
 			off: function (event, callback, context) {
-				//this.removeEventListener(event, _.bind(callback, context || this));
-				WinJS.Application.removeEventListener(event, _.bind(callback, context || this));
+				this.removeEventListener(event, _.bind(callback, context || this));
 			},
 
 			// Subscribe to event once
@@ -64,6 +60,24 @@
 				this.on(event, function () {
 					_.bind(callback, context || self);
 					self.off();
+				});
+			},
+
+			// Destroy
+			destroy: function() {
+				// remove events
+				if(this.events) {
+					this.configEvents(false);
+				}
+
+				// remove dom events
+				if(this.domEvents) {
+					this.configDomEvents(false);
+				}
+
+				// remove all
+				_.each(this, function(el){
+					el = null;
 				});
 			},
 
@@ -132,10 +146,8 @@
 
 				// Create model
 				if (this.model) {
-					var Model = this.model;
-					this.model = new Model();
-					// Pasing model events to the view
-					//this._listeners = _.extend(this._listeners || {} , this.model._listeners);
+					var Modeltemp = this.model;
+					this.model = new Modeltemp();
 				}
 
 				// Create $el
@@ -162,13 +174,13 @@
 			templateName: null, // Name current template
 
 			template: function (moreOptions) { // Get the template and compile it
-				return Handlebars.getTemplate({
+				var template = Handlebars.getTemplate({
 					templateName: this.templateName,
 					templatesPath: this.templatesPath,
-					templatesExtension: this.templatesExtension,
-					data: _.extend({}, this.options, this.moreOptions)
+					templatesExtension: this.templatesExtension
 				});
 
+				return template(_.extend({}, this.options, moreOptions));
 
 			},
 
@@ -244,12 +256,11 @@
 		{
 
 			customConstructor: function (options) {
-				// Create collection
-				this.collection = [];
+				// Create attributes
+				this.attributes = {};
 
 				// First of all
-				_.extend(this.options, options);
-				this.set('url', this.options.url || this.get('url') || null);
+				_.extend(this.attributes, options);
 
 				//Special base constructor
 				this.baseConstructor(this);
@@ -260,14 +271,14 @@
 
 
 			// Attributes of the model
-			attributes: {},
+			attributes: null,
 
 			// Getter attributes
 			get: function (attribute) {
 				if (!attribute) {
 					return this.attributes;
 				} else {
-					return this.attributes[attribute] || null;
+					return this.attributes[attribute];
 				}
 			},
 
@@ -276,24 +287,141 @@
 				this.attributes[attribute] = value;
 			},
 
+			// Delete an atrribute
+			delete: function(attribute) {
+				delete this[attribute];
+			},
+
 			// Atributes to String
 			toString: function () {
 				return JSON.stringify(this.attributes);
+			}
+
+		}
+	);
+
+	// Collection Class
+	var Collection = WinJS.Class.derive(
+
+		Base, // Parent Class
+
+		// Constructor
+		function (options) {
+			this.customConstructor(options);
+		},
+
+		// Instance Members
+		{
+
+			customConstructor: function (options) {
+				// Create collection
+				this.collection = [];
+
+				// First of all
+				_.extend(this.options, options);
+
+				//Special base constructor
+				this.baseConstructor(this);
+
+				// Init
+				this.initialize();
 			},
+
 
 			// Array of info
 			collection: null,
 
-			// Get JSON from an url andsave it in collection
-			getJSON: function (data, callback) {
+			// Model
+			model: Model,
+
+			// Last id
+			lastId: -1,
+
+			// Get element
+			get: function (id) {
+				return _.find(this.collection, function(el){
+					return el.get('id') == id;
+				});
+			},
+
+			// Edit element attribute
+			set: function (id, attribute, value) {
+				var model = this.collection[id];
+				model.attributes[attribute] = value;
+				this.trigger('set', model);
+			},
+
+			// Extend element
+			extend: function(id, options) {
+				var model = this.collection[id];
+				_.extend(model, options);
+				this.trigger('extend', model);
+			},
+
+
+			// Add element to collection
+			add: function (element) {
+				if(element.id){
+					this.lastId = element.id;
+				}else{
+					this.lastId++;
+				}
+				var model = new this.model(_.extend(element, { id: this.lastId }));
+				this.collection.push(model);
+				this.trigger('add', model);
+			},
+
+			// Add array of elements to collection
+			addSome: function(elements) {
+				_.each(elements, this.add, this);
+				this.trigger('addSome');
+			},
+
+			// Remove element from collection
+			remove: function(id) {
+				var model = this.collection[id];
+				this.collection.slice(id, 1);
+				this.trigger('remove', model);
+			},
+
+			// Clear collection
+			clear: function() {
+				this.collection = [];
+				this.trigger('clear');
+			},
+
+			// Load collection with json info
+			load: function(data) {
+				var collection;
+				if(typeof data === 'string'){
+					collection = JSON.parse(data);
+				}else{
+					collection = data;
+				}
 				var self = this;
-				var myUrl = this.get('url');
+				this.addSome(collection);
+				this.trigger('load', this.collection);
+			},
+
+			// Collection to String
+			toString: function () {
+				return JSON.stringify(_.pluck(this.collection, 'attributes'));
+			},
+
+			// Return the collection array
+			toJSON: function() {
+				return _.pluck(this.collection, 'attributes');
+			},
+
+			// Get JSON from an url and save it in collection
+			getJSON: function (options, callback) {
+				var self = this;
 
 				if (myUrl) {
 					$.ajax({
-						url: myUrl,
-						async: data.async || false,
-						data: data || {}
+						url: options.url,
+						async: options.async || true,
+						data: options.data || {}
 					}).done(function (results) {
 						var json;
 						if (typeof (results) === 'string') {
@@ -308,30 +436,13 @@
 							for (json_array in json){ break; }
 							json = json[json_array];
 						}
-						_.each(json, self.addToCollection, self);
-						self.trigger('collection.Fill', json);
+						self.addSome(json);
 						if (callback) {
 							callback(results);
 						}
 					});
 				}
-			},
-
-			// Add element to collection
-			addToCollection: function (element) {
-				var newId = this.collection.length;
-				element = _.extend(element, { _id: newId });
-				this.collection.push(element);
-				this.trigger('collection.Add', element);
-			},
-
-			//Reset the collection
-			resetCollection: function() {
-				this.collection = [];
-				this.trigger('collection.Reset');
 			}
-
-
 		}
 	);
 
@@ -430,7 +541,6 @@
 			if (Handlebars.templates === undefined || Handlebars.templates[name] === undefined) {
 				$.ajax({
 					url :  url,
-					data: options.data,
 					success : function(data) {
 						if (Handlebars.templates === undefined) {
 							Handlebars.templates = {};
@@ -451,8 +561,9 @@
 	WinJS.Namespace.define("WinjsMVR", {
 		View: View,
 		Model: Model,
+		Collection: Collection,
 		Router: Router
 	});
 
 
-})(window, jQuery, _);
+})(window, jQuery, _, Handlebars);
