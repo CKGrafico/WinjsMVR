@@ -2,7 +2,7 @@
 	WinJS MVR a simple library to do better and easy apps in Windows 8 with WinJS
 	Inspired in Backbone but more simple and oriented to WinJS
 	author: @CKGrafico
-	version: beta-0.9.3
+	version: 1.0.1
 */
 
 
@@ -352,7 +352,7 @@
 
 			// Edit element attribute
 			set: function (id, attribute, value) {
-				var model = this.collection[id];
+				var model = this.get(id);
 				model.attributes[attribute] = value;
 				this.trigger('set', model);
 			},
@@ -386,7 +386,7 @@
 			// Remove element from collection
 			remove: function(id) {
 				var model = this.collection[id];
-				this.collection.slice(id, 1);
+				this.collection.splice(id, 1);
 				this.trigger('remove', model);
 			},
 

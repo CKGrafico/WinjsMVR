@@ -5,6 +5,12 @@ WinjsMVR
 
 This library is based in backbone but built with WinJS if you're expert in backbone or angular, probably you don't need this, otherwise if you're a beginner in MV* libraries, probably WinjsMVR can help you.
 
+Question 1: ¿Is this MVR better than others?
+NO
+
+Question 2: ¿Why?
+Because is specific for WinJS and inspirated in Backbone but maked with WinJS API, if you're an expert with and MV* use it and don't use this :)
+
 ----------
 Documentation
 ---------
