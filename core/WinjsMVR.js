@@ -359,7 +359,7 @@
 
 			// Extend element
 			extend: function(id, options) {
-				var model = this.collection[id];
+				var model = this.get(id);
 				_.extend(model, options);
 				this.trigger('extend', model);
 			},
@@ -385,8 +385,8 @@
 
 			// Remove element from collection
 			remove: function(id) {
-				var model = this.collection[id];
-				this.collection.splice(id, 1);
+				var model = this.get(id);
+				this.collection = _.without(this.collection, model);
 				this.trigger('remove', model);
 			},
 
@@ -543,7 +543,7 @@
 		// handlebars
 		Handlebars.getTemplate = function(options) {
 
-			var url = options.templatesPath + options.templateName + options.templatesExtension; 
+			var url = options.templatesPath + options.templateName + options.templatesExtension;
 			if (Handlebars.templates === undefined || Handlebars.templates[name] === undefined) {
 				$.ajax({
 					url :  url,
@@ -551,7 +551,7 @@
 						if (Handlebars.templates === undefined) {
 							Handlebars.templates = {};
 						}
-							
+
 						Handlebars.templates[name] = Handlebars.compile(data);
 					},
 					async : false
