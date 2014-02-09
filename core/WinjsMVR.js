@@ -156,6 +156,12 @@
 					this.model = new Modeltemp();
 				}
 
+				// Create collection
+				if (this.collection) {
+					var CollectionTemp = this.collection;
+					this.collection = new CollectionTemp();
+				}
+
 				// Create $el
 				this.$el = $('<' + this.tagName + '/>').addClass(this.className).attr('id', this.idName);
 				this.el = this.$el[0];
